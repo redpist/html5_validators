@@ -24,6 +24,14 @@ module ActiveModel
           v.attributes.include?(attribute.to_sym) && (v.options.keys & [:greater_than, :greater_than_or_equal_to]).any? && (v.options.keys & [:if, :unless, :allow_nil, :allow_blank]).empty?
         }.map {|v| v.options.slice(:greater_than, :greater_than_or_equal_to)}.map(&:values).flatten.min
       end
+
+      def attribute_format(attribute)
+        self.validators.grep(FormatValidator).select {|v|
+          v.attributes.include?(attribute.to_sym)
+          #&& (v.options.keys & [:if, :unless, :allow_nil, :allow_blank, :tokenizer]).empty?
+        }.map {|v| v.options[:with].source }.first
+      end
+
     end
   end
 end

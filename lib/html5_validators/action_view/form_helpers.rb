@@ -11,6 +11,12 @@ module Html5Validators
         @options["maxlength"] ||= object.class.attribute_maxlength(@method_name)
       end
     end
+
+    def inject_format_field
+      if object.class.ancestors.include?(ActiveModel::Validations) && (object.auto_html5_validation != false) && (object.class.auto_html5_validation != false)
+        @options["pattern"] ||= object.class.attribute_format(@method_name)
+      end
+    end
   end
 end if ActionPack::VERSION::STRING >= '4'
 
@@ -35,6 +41,7 @@ module ActionView
           def render_with_html5_attributes
             inject_required_field
             inject_maxlength_field
+            inject_format_field
 
             if object.class.ancestors.include?(ActiveModel::Validations) && (object.auto_html5_validation != false) && (object.class.auto_html5_validation != false)
               @options["max"] ||= object.class.attribute_max(@method_name)
@@ -49,6 +56,7 @@ module ActionView
           def render_with_html5_attributes
             inject_required_field
             inject_maxlength_field
+            inject_format_field
 
             render_without_html5_attributes
           end
@@ -75,6 +83,7 @@ module ActionView
             options["maxlength"] ||= object.class.attribute_maxlength(method_name)
             options["max"] ||= object.class.attribute_max(method_name)
             options["min"] ||= object.class.attribute_min(method_name)
+            options["pattern"] ||= object.class.attribute_format(method_name)
           end
           to_input_field_tag_without_html5_attributes field_type, options
         end
@@ -83,6 +92,7 @@ module ActionView
         def to_text_area_tag_with_html5_attributes(options = {})
           if object.class.ancestors.include?(ActiveModel::Validations) && (object.auto_html5_validation != false) && (object.class.auto_html5_validation != false)
             options["required"] ||= object.class.attribute_required?(method_name)
+            options["pattern"] ||= object.class.attribute_format(method_name)
             options["maxlength"] ||= object.class.attribute_maxlength(method_name)
           end
           to_text_area_tag_without_html5_attributes options
